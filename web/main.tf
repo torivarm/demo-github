@@ -33,7 +33,7 @@ resource "azurerm_storage_blob" "index_html" {
   storage_account_name   = azurerm_storage_account.sa_web.name
   storage_container_name = azurerm_storage_container.sc_web.name
   type                   = "Block"
-  content_type           = "text/html"
+  content_type = "text/html"
   source                 = "<h1>Static web page deployed using Terraform</h1>"
 }
 
