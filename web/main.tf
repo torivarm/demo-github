@@ -1,5 +1,9 @@
-provider "azurerm" {
-  features {}
+locals {
+  workspace_suffix = terraform.workspace == "default" ? "" : "${terraform.workspace}"
+  web_suffix = "<h1>${terraform.workspace}</h1>"
+  
+  rg_name = "${var.rg_name}-${local.workspace_suffix}"
+  sa_name = "${var.sa_name}${local.workspace_suffix}"
 }
 
 resource "random_string" "random_string" {
@@ -10,37 +14,33 @@ resource "random_string" "random_string" {
 
 # Create Resource Group
 resource "azurerm_resource_group" "rg_web" {
-  name     = var.resource_group_name
+  name     = local.rg_name
   location = var.location
 }
 
 # Create Storage Account
 resource "azurerm_storage_account" "sa_web" {
-  name                     = "staticweb${random_string.random_string.result}"
+  name                     = "${lower(local.sa_name)}${random_string.random_string.result}"
   resource_group_name      = azurerm_resource_group.rg_web.name
   location                 = azurerm_resource_group.rg_web.location
   account_tier             = "Standard"
   account_replication_type = "LRS"
 
-  StaticWebsite {
-    index_document = "index.html"
+  static_website {
+    index_document = var.index_document
   }
 }
 
 # Add a index.html file to the storage account
 resource "azurerm_storage_blob" "index_html" {
-  name                   = "index.html"
+  name                   = var.index_document
   storage_account_name   = azurerm_storage_account.sa_web.name
-  storage_container_name = azurerm_storage_container.sc_web.name
+  storage_container_name = "$web"
   type                   = "Block"
-  content_type = "text/html"
-  source                 = "<h1>Static web page deployed using Terraform</h1>"
+  content_type           = "text/html"
+  source_content         = "${var.source_content}${local.web_suffix}"
 }
 
-
-resource "azurerm_storage_container" "sc_web" {
-  name                  = "$web"
-  storage_account_name  = azurerm_storage_account.sa_web.name
-  container_access_type = "private"
+output "primary_web_endpoint" {
+  value = azurerm_storage_account.sa_web.primary_web_endpoint
 }
-

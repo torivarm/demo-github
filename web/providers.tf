@@ -9,6 +9,10 @@ terraform {
     resource_group_name  = "rg-backend-tfstate-dev"
     storage_account_name = "sabetfss61r3a4sy5"
     container_name       = "tfstate"
-    key                  = "dev-backend.terraform.tfstate"
+    key                  = "web.terraform.tfstate"
   }
+}
+
+provider "azurerm" {
+  features {}
 }
