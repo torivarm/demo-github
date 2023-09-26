@@ -25,6 +25,7 @@ jobs:
       ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
       ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION }}
       ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      WORKING_DIR: ./web-demo
       
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -34,12 +35,15 @@ jobs:
       # Runs a single command using the runners shell
       - name: 'Terraform init'
         id: init
-        run: terraform init          
+        run: terraform init
+        working-directory: ${{ env.WORKING_DIR }}          
 
       - name: 'Terraform plan'
         id: plan
         run: terraform plan
+        working-directory: ${{ env.WORKING_DIR }} 
                     
       - name: 'Terraform apply'
         id: apply
         run: terraform apply -auto-approve
+        working-directory: ${{ env.WORKING_DIR }} 
