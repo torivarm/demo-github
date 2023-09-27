@@ -18,7 +18,7 @@ variable "sa_name" {
 variable "source_content" {
   type        = string
   description = "Source content for the index.html file"
-  default = "<h1>Made with Terraform, boja - Edit content in folder trigger</h1>"
+  default = "<h1>Made with Terraform, boja - Content edited in folder trigger</h1>"
 }
 
 variable "index_document" {
